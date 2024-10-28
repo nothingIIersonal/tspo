@@ -1,0 +1,590 @@
+definitions:
+  common.Book:
+    properties:
+      genre:
+        type: string
+      id:
+        type: string
+      isbn:
+        type: string
+      publishinghouse:
+        type: string
+      title:
+        type: string
+    type: object
+  common.BookResponse:
+    properties:
+      data:
+        $ref: '#/definitions/common.Book'
+      message:
+        type: string
+    type: object
+  common.BooksResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/common.Book'
+        type: array
+      message:
+        type: string
+    type: object
+  common.CitiesResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/common.City'
+        type: array
+      message:
+        type: string
+    type: object
+  common.City:
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+    type: object
+  common.CityResponse:
+    properties:
+      data:
+        $ref: '#/definitions/common.City'
+      message:
+        type: string
+    type: object
+  common.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  common.Genre:
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+    type: object
+  common.GenreResponse:
+    properties:
+      data:
+        $ref: '#/definitions/common.Genre'
+      message:
+        type: string
+    type: object
+  common.GenresResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/common.Genre'
+        type: array
+      message:
+        type: string
+    type: object
+  common.PublishingHouse:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      title:
+        type: string
+    type: object
+  common.PublishingHouseResponse:
+    properties:
+      data:
+        $ref: '#/definitions/common.PublishingHouse'
+      message:
+        type: string
+    type: object
+  common.PublishingHousesResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/common.PublishingHouse'
+        type: array
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /books:
+    get:
+      description: Returns list of books
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.BooksResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Get all books
+      tags:
+      - books
+    post:
+      consumes:
+      - application/json
+      description: Add book to list
+      parameters:
+      - description: book data
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/common.Book'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/common.BookResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Create new book
+      tags:
+      - books
+  /books/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes existing book
+      parameters:
+      - description: book ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.BookResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Delete book
+      tags:
+      - books
+    get:
+      description: Returns book
+      parameters:
+      - description: book ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.BookResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Get one book
+      tags:
+      - books
+    put:
+      consumes:
+      - application/json
+      description: Updates existing book
+      parameters:
+      - description: book ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: book data
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/common.Book'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.BookResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Update book
+      tags:
+      - books
+  /cities:
+    get:
+      description: Returns list of cities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.CitiesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Get all cities
+      tags:
+      - cities
+    post:
+      consumes:
+      - application/json
+      description: Add city to list
+      parameters:
+      - description: city data
+        in: body
+        name: city
+        required: true
+        schema:
+          $ref: '#/definitions/common.City'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/common.CityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Create new city
+      tags:
+      - cities
+  /cities/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes existing city
+      parameters:
+      - description: city ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.CityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Delete city
+      tags:
+      - cities
+    get:
+      description: Returns city
+      parameters:
+      - description: city ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.CityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Get one city
+      tags:
+      - cities
+    put:
+      consumes:
+      - application/json
+      description: Updates existing city
+      parameters:
+      - description: city ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: city data
+        in: body
+        name: city
+        required: true
+        schema:
+          $ref: '#/definitions/common.City'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.CityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Update city
+      tags:
+      - cities
+  /genres:
+    get:
+      description: Returns list of genres
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.GenresResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Get all genres
+      tags:
+      - genres
+    post:
+      consumes:
+      - application/json
+      description: Add genre to list
+      parameters:
+      - description: genre data
+        in: body
+        name: genre
+        required: true
+        schema:
+          $ref: '#/definitions/common.Genre'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/common.GenresResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Create new genre
+      tags:
+      - genres
+  /genres/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes existing genre
+      parameters:
+      - description: genre ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.GenreResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Delete genre
+      tags:
+      - genres
+    get:
+      description: Returns genre
+      parameters:
+      - description: genre ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.GenreResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Get one genre
+      tags:
+      - genres
+    put:
+      consumes:
+      - application/json
+      description: Updates existing genre
+      parameters:
+      - description: Genre ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: genre data
+        in: body
+        name: genre
+        required: true
+        schema:
+          $ref: '#/definitions/common.Genre'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.GenreResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Update genre
+      tags:
+      - genres
+  /publishingHouses:
+    get:
+      description: Returns list of publishing houses
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.PublishingHousesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Get all publishing houses
+      tags:
+      - publishingHouses
+    post:
+      consumes:
+      - application/json
+      description: Add publishing house to list
+      parameters:
+      - description: publishing house data
+        in: body
+        name: publishinghouse
+        required: true
+        schema:
+          $ref: '#/definitions/common.PublishingHouse'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/common.PublishingHouseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Create new publishing house
+      tags:
+      - publishingHouses
+  /publishingHouses/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes existing publishing house
+      parameters:
+      - description: publishing house ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.PublishingHouseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Delete publishing house
+      tags:
+      - publishingHouses
+    get:
+      description: Returns publishing house
+      parameters:
+      - description: publishing house ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.PublishingHouseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Get one publishing house
+      tags:
+      - publishingHouses
+    put:
+      consumes:
+      - application/json
+      description: Updates existing publishing house
+      parameters:
+      - description: publishing house ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: publishing house data
+        in: body
+        name: publishinghouse
+        required: true
+        schema:
+          $ref: '#/definitions/common.PublishingHouse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.PublishingHouseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Update publishing house
+      tags:
+      - publishingHouses
+swagger: "2.0"
