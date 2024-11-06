@@ -1,0 +1,7 @@
+Description=PR2
+
+[Service]
+Type=oneshot
+ExecStart=/home/dxdy/Documents/study/mirea/mag/sem1/tspo/pr2/stat /home/dxdy/Documents/study/mirea/mag/sem1/tspo/pr2/settings.json
+ExecStop=kill -15 `systemctl show --property MainPID --value stat`
+RemainAfterExit=yes

@@ -1,0 +1,12 @@
+{
+	"LogTo": "/home/dxdy/Documents/study/mirea/mag/sem1/tspo/pr2/log.txt",
+	"UpdateTimeS": 1,
+	"Email": "h58vom@mepost.pw",
+	"NetIface": "wlp0s20f3",
+	"Threasholds": {
+		"CPU": 20,
+		"RAM": 80,
+		"Memory": 80,
+		"Network": 70
+	}
+}

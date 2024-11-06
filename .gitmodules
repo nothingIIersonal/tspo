@@ -1,0 +1,3 @@
+[submodule "pr2/easy-email-cpp"]
+	path = pr2/easy-email-cpp
+	url = https://github.com/NewYaroslav/easy-email-cpp.git
