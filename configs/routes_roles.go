@@ -1,12 +1,14 @@
 package configs
 
 import (
+	contextlib "context"
 	"net/http"
 	"pr8_1/dtos"
 	"pr8_1/models"
 	"pr8_1/repositories"
 	services "pr8_1/services/role"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,6 +47,45 @@ func SetupRolesRoutes(roleRepository *repositories.RoleRepository, route *gin.En
 		code := http.StatusOK
 
 		response := services.FindAllRoles(*roleRepository)
+
+		if !response.Success {
+			code = http.StatusBadRequest
+		}
+
+		context.JSON(code, response)
+	})
+
+	route.GET("/roles/timeout/", func(context *gin.Context) {
+		ctx, cancel := contextlib.WithTimeout(context.Request.Context(), 2*time.Second)
+		defer cancel()
+
+		code := http.StatusOK
+
+		response := services.FindAllRolesWithCtx(*roleRepository, &ctx)
+
+		if !response.Success {
+			code = http.StatusBadRequest
+		}
+
+		context.JSON(code, response)
+	})
+
+	route.GET("/roles/paging/", func(context *gin.Context) {
+		code := http.StatusOK
+
+		page := 1
+		limit := 10
+		sort := "user_id asc"
+
+		var searchs []dtos.Search
+
+		query := context.Request.URL.Query()
+
+		parseQuery(&query, &limit, &page, &sort, &searchs)
+
+		offset := (page - 1) * limit
+
+		response := services.FindAllRolesPaging(*roleRepository, page, limit, offset, sort, searchs)
 
 		if !response.Success {
 			code = http.StatusBadRequest

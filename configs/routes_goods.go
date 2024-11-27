@@ -1,12 +1,14 @@
 package configs
 
 import (
+	contextlib "context"
 	"net/http"
 	"pr8_1/dtos"
 	"pr8_1/models"
 	"pr8_1/repositories"
 	services "pr8_1/services/good"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,6 +47,45 @@ func SetupGoodsRoutes(goodRepository *repositories.GoodRepository, route *gin.En
 		code := http.StatusOK
 
 		response := services.FindAllGoods(*goodRepository)
+
+		if !response.Success {
+			code = http.StatusBadRequest
+		}
+
+		context.JSON(code, response)
+	})
+
+	route.GET("/goods/timeout/", func(context *gin.Context) {
+		ctx, cancel := contextlib.WithTimeout(context.Request.Context(), 2*time.Second)
+		defer cancel()
+
+		code := http.StatusOK
+
+		response := services.FindAllGoodsWithCtx(*goodRepository, &ctx)
+
+		if !response.Success {
+			code = http.StatusBadRequest
+		}
+
+		context.JSON(code, response)
+	})
+
+	route.GET("/goods/paging/", func(context *gin.Context) {
+		code := http.StatusOK
+
+		page := 1
+		limit := 10
+		sort := "user_id asc"
+
+		var searchs []dtos.Search
+
+		query := context.Request.URL.Query()
+
+		parseQuery(&query, &limit, &page, &sort, &searchs)
+
+		offset := (page - 1) * limit
+
+		response := services.FindAllGoodsPaging(*goodRepository, page, limit, offset, sort, searchs)
 
 		if !response.Success {
 			code = http.StatusBadRequest

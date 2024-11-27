@@ -1,12 +1,14 @@
 package configs
 
 import (
+	contextlib "context"
 	"net/http"
 	"pr8_1/dtos"
 	"pr8_1/models"
 	"pr8_1/repositories"
 	services "pr8_1/services/feature"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,6 +47,45 @@ func SetupFeaturesRoutes(featureRepository *repositories.FeatureRepository, rout
 		code := http.StatusOK
 
 		response := services.FindAllFeatures(*featureRepository)
+
+		if !response.Success {
+			code = http.StatusBadRequest
+		}
+
+		context.JSON(code, response)
+	})
+
+	route.GET("/features/timeout/", func(context *gin.Context) {
+		ctx, cancel := contextlib.WithTimeout(context.Request.Context(), 2*time.Second)
+		defer cancel()
+
+		code := http.StatusOK
+
+		response := services.FindAllFeaturesWithCtx(*featureRepository, &ctx)
+
+		if !response.Success {
+			code = http.StatusBadRequest
+		}
+
+		context.JSON(code, response)
+	})
+
+	route.GET("/features/paging/", func(context *gin.Context) {
+		code := http.StatusOK
+
+		page := 1
+		limit := 10
+		sort := "user_id asc"
+
+		var searchs []dtos.Search
+
+		query := context.Request.URL.Query()
+
+		parseQuery(&query, &limit, &page, &sort, &searchs)
+
+		offset := (page - 1) * limit
+
+		response := services.FindAllFeaturesPaging(*featureRepository, page, limit, offset, sort, searchs)
 
 		if !response.Success {
 			code = http.StatusBadRequest

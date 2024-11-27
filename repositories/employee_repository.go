@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"context"
+	"pr8_1/dtos"
 	"pr8_1/models"
 
 	"gorm.io/gorm"
@@ -34,6 +36,32 @@ func (r *EmployeeRepository) FindAll() RepositoryResult {
 	}
 
 	return RepositoryResult{Result: &Employees}
+}
+
+func (r *EmployeeRepository) FindAllWithCtx(ctx *context.Context) RepositoryResult {
+	var Employees models.Employees
+
+	err := r.db.WithContext(*ctx).Preload("User.Role").Find(&Employees).Error
+
+	if err != nil {
+		return RepositoryResult{Error: err}
+	}
+
+	return RepositoryResult{Result: &Employees}
+}
+
+func (r *EmployeeRepository) FindAllPaging(limit int, offset int, sort string, searchs []dtos.Search) (RepositoryResult, int64) {
+	var Employees models.Employees
+	var total int64
+
+	find := r.db.Preload("User.Role").Limit(limit).Offset(offset)
+	err := applySearchs(find, searchs).Order(sort).Find(&Employees).Count(&total).Error
+
+	if err != nil {
+		return RepositoryResult{Error: err}, 0
+	}
+
+	return RepositoryResult{Result: &Employees}, total
 }
 
 func (r *EmployeeRepository) FindOneById(id uint) RepositoryResult {

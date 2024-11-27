@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"pr8_1/dtos"
 	"pr8_1/models"
 	"pr8_1/repositories"
@@ -28,6 +29,30 @@ func FindAllRoles(repository repositories.RoleRepository) dtos.Response {
 	var datas = operationResult.Result.(*models.Roles)
 
 	return dtos.Response{Success: true, Data: datas}
+}
+
+func FindAllRolesWithCtx(repository repositories.RoleRepository, ctx *context.Context) dtos.Response {
+	operationResult := repository.FindAllWithCtx(ctx)
+
+	if operationResult.Error != nil {
+		return dtos.Response{Success: false, Message: operationResult.Error.Error()}
+	}
+
+	var datas = operationResult.Result.(*models.Roles)
+
+	return dtos.Response{Success: true, Data: datas}
+}
+
+func FindAllRolesPaging(repository repositories.RoleRepository, page int, limit int, offset int, sort string, searchs []dtos.Search) dtos.ResponsePaging {
+	operationResult, total := repository.FindAllPaging(limit, offset, sort, searchs)
+
+	if operationResult.Error != nil {
+		return dtos.ResponsePaging{Success: false, Message: operationResult.Error.Error()}
+	}
+
+	var datas = operationResult.Result.(*models.Roles)
+
+	return dtos.ResponsePaging{Success: true, Data: datas, Total: &total, Page: page, Limit: &limit}
 }
 
 func FindOneRoleById(id uint, repository repositories.RoleRepository) dtos.Response {

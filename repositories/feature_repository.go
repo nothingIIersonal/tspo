@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"context"
+	"pr8_1/dtos"
 	"pr8_1/models"
 
 	"gorm.io/gorm"
@@ -34,6 +36,32 @@ func (r *FeatureRepository) FindAll() RepositoryResult {
 	}
 
 	return RepositoryResult{Result: &Features}
+}
+
+func (r *FeatureRepository) FindAllWithCtx(ctx *context.Context) RepositoryResult {
+	var Features models.Features
+
+	err := r.db.WithContext(*ctx).Find(&Features).Error
+
+	if err != nil {
+		return RepositoryResult{Error: err}
+	}
+
+	return RepositoryResult{Result: &Features}
+}
+
+func (r *FeatureRepository) FindAllPaging(limit int, offset int, sort string, searchs []dtos.Search) (RepositoryResult, int64) {
+	var Features models.Features
+	var total int64
+
+	find := r.db.Limit(limit).Offset(offset).Order(sort)
+	err := applySearchs(find, searchs).Find(&Features).Count(&total).Error
+
+	if err != nil {
+		return RepositoryResult{Error: err}, 0
+	}
+
+	return RepositoryResult{Result: &Features}, total
 }
 
 func (r *FeatureRepository) FindOneById(id uint) RepositoryResult {

@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"context"
+	"pr8_1/dtos"
 	"pr8_1/models"
 
 	"gorm.io/gorm"
@@ -28,6 +30,32 @@ func (r *RoleRepository) FindAll() RepositoryResult {
 	var Roles models.Roles
 
 	err := r.db.Find(&Roles).Error
+
+	if err != nil {
+		return RepositoryResult{Error: err}
+	}
+
+	return RepositoryResult{Result: &Roles}
+}
+
+func (r *RoleRepository) FindAllPaging(limit int, offset int, sort string, searchs []dtos.Search) (RepositoryResult, int64) {
+	var Roles models.Roles
+	var total int64
+
+	find := r.db.Limit(limit).Offset(offset).Order(sort)
+	err := applySearchs(find, searchs).Find(&Roles).Count(&total).Error
+
+	if err != nil {
+		return RepositoryResult{Error: err}, 0
+	}
+
+	return RepositoryResult{Result: &Roles}, total
+}
+
+func (r *RoleRepository) FindAllWithCtx(ctx *context.Context) RepositoryResult {
+	var Roles models.Roles
+
+	err := r.db.WithContext(*ctx).Find(&Roles).Error
 
 	if err != nil {
 		return RepositoryResult{Error: err}

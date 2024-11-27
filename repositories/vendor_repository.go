@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"context"
+	"pr8_1/dtos"
 	"pr8_1/models"
 
 	"gorm.io/gorm"
@@ -34,6 +36,32 @@ func (r *VendorRepository) FindAll() RepositoryResult {
 	}
 
 	return RepositoryResult{Result: &Vendors}
+}
+
+func (r *VendorRepository) FindAllWithCtx(ctx *context.Context) RepositoryResult {
+	var Vendors models.Vendors
+
+	err := r.db.WithContext(*ctx).Find(&Vendors).Error
+
+	if err != nil {
+		return RepositoryResult{Error: err}
+	}
+
+	return RepositoryResult{Result: &Vendors}
+}
+
+func (r *VendorRepository) FindAllPaging(limit int, offset int, sort string, searchs []dtos.Search) (RepositoryResult, int64) {
+	var Vendors models.Vendors
+	var total int64
+
+	find := r.db.Limit(limit).Offset(offset).Order(sort)
+	err := applySearchs(find, searchs).Find(&Vendors).Count(&total).Error
+
+	if err != nil {
+		return RepositoryResult{Error: err}, 0
+	}
+
+	return RepositoryResult{Result: &Vendors}, total
 }
 
 func (r *VendorRepository) FindOneById(id uint) RepositoryResult {

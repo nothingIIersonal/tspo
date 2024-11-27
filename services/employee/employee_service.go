@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"pr8_1/dtos"
 	"pr8_1/models"
 	"pr8_1/repositories"
@@ -28,6 +29,30 @@ func FindAllEmployees(repository repositories.EmployeeRepository) dtos.Response 
 	var datas = operationResult.Result.(*models.Employees)
 
 	return dtos.Response{Success: true, Data: datas}
+}
+
+func FindAllEmployeesWithCtx(repository repositories.EmployeeRepository, ctx *context.Context) dtos.Response {
+	operationResult := repository.FindAllWithCtx(ctx)
+
+	if operationResult.Error != nil {
+		return dtos.Response{Success: false, Message: operationResult.Error.Error()}
+	}
+
+	var datas = operationResult.Result.(*models.Employees)
+
+	return dtos.Response{Success: true, Data: datas}
+}
+
+func FindAllEmployeesPaging(repository repositories.EmployeeRepository, page int, limit int, offset int, sort string, searchs []dtos.Search) dtos.ResponsePaging {
+	operationResult, total := repository.FindAllPaging(limit, offset, sort, searchs)
+
+	if operationResult.Error != nil {
+		return dtos.ResponsePaging{Success: false, Message: operationResult.Error.Error()}
+	}
+
+	var datas = operationResult.Result.(*models.Employees)
+
+	return dtos.ResponsePaging{Success: true, Data: datas, Total: &total, Page: page, Limit: &limit}
 }
 
 func FindOneEmployeeById(id uint, repository repositories.EmployeeRepository) dtos.Response {
