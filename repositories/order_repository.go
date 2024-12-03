@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 	"pr8_1/dtos"
 	"pr8_1/models"
 
@@ -17,11 +18,19 @@ func NewOrderRepository(db *gorm.DB) *OrderRepository {
 }
 
 func (r *OrderRepository) Save(Order *models.Order) RepositoryResult {
-	err := r.db.Save(Order).Error
+	tx := r.db.Begin()
+
+	err := tx.Save(Order).Error
+	fmt.Println("[ORDER] Trying to save...")
 
 	if err != nil {
+		tx.Rollback()
+		fmt.Println("[ORDER] Rollback...")
 		return RepositoryResult{Error: err}
 	}
+
+	tx.Commit()
+	fmt.Println("[ORDER] Commited!")
 
 	return RepositoryResult{Result: Order}
 }
@@ -77,21 +86,37 @@ func (r *OrderRepository) FindOneById(id uint) RepositoryResult {
 }
 
 func (r *OrderRepository) DeleteOneById(id uint) RepositoryResult {
-	err := r.db.Delete(&models.Order{OrderID: id}).Error
+	tx := r.db.Begin()
+
+	err := tx.Delete(&models.Order{OrderID: id}).Error
+	fmt.Println("[ORDER] Trying to delete...")
 
 	if err != nil {
+		tx.Rollback()
+		fmt.Println("[ORDER] Rollback...")
 		return RepositoryResult{Error: err}
 	}
+
+	tx.Commit()
+	fmt.Println("[ORDER] Commited!")
 
 	return RepositoryResult{Result: nil}
 }
 
 func (r *OrderRepository) DeleteByIds(ids *[]string) RepositoryResult {
-	err := r.db.Where("OrderID IN (?)", *ids).Delete(&models.Orders{}).Error
+	tx := r.db.Begin()
+
+	err := tx.Where("OrderID IN (?)", *ids).Delete(&models.Orders{}).Error
+	fmt.Println("[ORDER] Trying to delete...")
 
 	if err != nil {
+		tx.Rollback()
+		fmt.Println("[ORDER] Rollback...")
 		return RepositoryResult{Error: err}
 	}
+
+	tx.Commit()
+	fmt.Println("[ORDER] Commited!")
 
 	return RepositoryResult{Result: nil}
 }

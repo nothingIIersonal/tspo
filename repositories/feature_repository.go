@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 	"pr8_1/dtos"
 	"pr8_1/models"
 
@@ -17,11 +18,19 @@ func NewFeatureRepository(db *gorm.DB) *FeatureRepository {
 }
 
 func (r *FeatureRepository) Save(Feature *models.Feature) RepositoryResult {
-	err := r.db.Save(Feature).Error
+	tx := r.db.Begin()
+
+	err := tx.Save(Feature).Error
+	fmt.Println("[FEATURE] Trying to save...")
 
 	if err != nil {
+		tx.Rollback()
+		fmt.Println("[FEATURE] Rollback...")
 		return RepositoryResult{Error: err}
 	}
+
+	tx.Commit()
+	fmt.Println("[FEATURE] Commited!")
 
 	return RepositoryResult{Result: Feature}
 }
@@ -77,21 +86,37 @@ func (r *FeatureRepository) FindOneById(id uint) RepositoryResult {
 }
 
 func (r *FeatureRepository) DeleteOneById(id uint) RepositoryResult {
-	err := r.db.Delete(&models.Feature{FeatureID: id}).Error
+	tx := r.db.Begin()
+
+	err := tx.Delete(&models.Feature{FeatureID: id}).Error
+	fmt.Println("[FEATURE] Trying to delete...")
 
 	if err != nil {
+		tx.Rollback()
+		fmt.Println("[FEATURE] Rollback...")
 		return RepositoryResult{Error: err}
 	}
+
+	tx.Commit()
+	fmt.Println("[FEATURE] Commited!")
 
 	return RepositoryResult{Result: nil}
 }
 
 func (r *FeatureRepository) DeleteByIds(ids *[]string) RepositoryResult {
-	err := r.db.Where("FeatureID IN (?)", *ids).Delete(&models.Features{}).Error
+	tx := r.db.Begin()
+
+	err := tx.Where("FeatureID IN (?)", *ids).Delete(&models.Features{}).Error
+	fmt.Println("[FEATURE] Trying to delete...")
 
 	if err != nil {
+		tx.Rollback()
+		fmt.Println("[FEATURE] Rollback...")
 		return RepositoryResult{Error: err}
 	}
+
+	tx.Commit()
+	fmt.Println("[FEATURE] Commited!")
 
 	return RepositoryResult{Result: nil}
 }

@@ -2,6 +2,7 @@ package configs
 
 import (
 	contextlib "context"
+	"fmt"
 	"net/http"
 	"pr8_1/dtos"
 	"pr8_1/models"
@@ -75,7 +76,7 @@ func SetupRolesRoutes(roleRepository *repositories.RoleRepository, route *gin.En
 
 		page := 1
 		limit := 10
-		sort := "user_id asc"
+		sort := "role_id asc"
 
 		var searchs []dtos.Search
 
@@ -153,6 +154,8 @@ func SetupRolesRoutes(roleRepository *repositories.RoleRepository, route *gin.En
 		var multiID dtos.MultiID
 
 		err := context.ShouldBindJSON(&multiID)
+
+		fmt.Println(multiID)
 
 		// validation errors
 		if err != nil {

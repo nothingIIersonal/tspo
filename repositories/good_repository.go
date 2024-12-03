@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 	"pr8_1/dtos"
 	"pr8_1/models"
 
@@ -17,11 +18,19 @@ func NewGoodRepository(db *gorm.DB) *GoodRepository {
 }
 
 func (r *GoodRepository) Save(Good *models.Good) RepositoryResult {
-	err := r.db.Save(Good).Error
+	tx := r.db.Begin()
+
+	err := tx.Save(Good).Error
+	fmt.Println("[GOOD] Trying to save...")
 
 	if err != nil {
+		tx.Rollback()
+		fmt.Println("[GOOD] Rollback...")
 		return RepositoryResult{Error: err}
 	}
+
+	tx.Commit()
+	fmt.Println("[GOOD] Commited!")
 
 	return RepositoryResult{Result: Good}
 }
@@ -77,21 +86,37 @@ func (r *GoodRepository) FindOneById(id uint) RepositoryResult {
 }
 
 func (r *GoodRepository) DeleteOneById(id uint) RepositoryResult {
-	err := r.db.Delete(&models.Good{GoodID: id}).Error
+	tx := r.db.Begin()
+
+	err := tx.Delete(&models.Good{GoodID: id}).Error
+	fmt.Println("[GOOD] Trying to delete...")
 
 	if err != nil {
+		tx.Rollback()
+		fmt.Println("[GOOD] Rollback...")
 		return RepositoryResult{Error: err}
 	}
+
+	tx.Commit()
+	fmt.Println("[GOOD] Commited!")
 
 	return RepositoryResult{Result: nil}
 }
 
 func (r *GoodRepository) DeleteByIds(ids *[]string) RepositoryResult {
-	err := r.db.Where("GoodID IN (?)", *ids).Delete(&models.Goods{}).Error
+	tx := r.db.Begin()
+
+	err := tx.Where("GoodID IN (?)", *ids).Delete(&models.Goods{}).Error
+	fmt.Println("[GOOD] Trying to delete...")
 
 	if err != nil {
+		tx.Rollback()
+		fmt.Println("[GOOD] Rollback...")
 		return RepositoryResult{Error: err}
 	}
+
+	tx.Commit()
+	fmt.Println("[GOOD] Commited!")
 
 	return RepositoryResult{Result: nil}
 }

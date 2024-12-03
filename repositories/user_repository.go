@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 	"pr8_1/dtos"
 	"pr8_1/models"
 
@@ -17,11 +18,19 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 }
 
 func (r *UserRepository) Save(User *models.User) RepositoryResult {
-	err := r.db.Save(User).Error
+	tx := r.db.Begin()
+
+	err := tx.Save(User).Error
+	fmt.Println("[USER] Trying to save...")
 
 	if err != nil {
+		tx.Rollback()
+		fmt.Println("[USER] Rollback...")
 		return RepositoryResult{Error: err}
 	}
+
+	tx.Commit()
+	fmt.Println("[USER] Commited!")
 
 	return RepositoryResult{Result: User}
 }
@@ -77,21 +86,37 @@ func (r *UserRepository) FindOneById(id uint) RepositoryResult {
 }
 
 func (r *UserRepository) DeleteOneById(id uint) RepositoryResult {
-	err := r.db.Delete(&models.User{UserID: id}).Error
+	tx := r.db.Begin()
+
+	err := tx.Delete(&models.User{UserID: id}).Error
+	fmt.Println("[USER] Trying to delete...")
 
 	if err != nil {
+		tx.Rollback()
+		fmt.Println("[USER] Rollback...")
 		return RepositoryResult{Error: err}
 	}
+
+	tx.Commit()
+	fmt.Println("[USER] Commited!")
 
 	return RepositoryResult{Result: nil}
 }
 
 func (r *UserRepository) DeleteByIds(ids *[]string) RepositoryResult {
-	err := r.db.Where("UserID IN (?)", *ids).Delete(&models.Users{}).Error
+	tx := r.db.Begin()
+
+	err := tx.Where("UserID IN (?)", *ids).Delete(&models.Users{}).Error
+	fmt.Println("[USER] Trying to delete...")
 
 	if err != nil {
+		tx.Rollback()
+		fmt.Println("[USER] Rollback...")
 		return RepositoryResult{Error: err}
 	}
+
+	tx.Commit()
+	fmt.Println("[USER] Commited!")
 
 	return RepositoryResult{Result: nil}
 }
